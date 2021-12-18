@@ -91,18 +91,21 @@ def load_students(file_name):
     # Открыть файл с заданным именем для чтения.
     with open(file_name, "r", encoding="utf-8") as fin:
         loaded = json.load(fin)
-        print("Файл успешно загружен")
-        # Открыть файл с маской для валидации
-        with open('checking.json') as checking:
-            schema = json.load(checking)
-            validator = jsonschema.Draft7Validator(schema)
-            try:
-                if not validator.validate(loaded):
-                    print("Валидация выполнена успешно")
-            except jsonschema.exceptions.ValidationError:
-                print("Ошибка валидации", list(validator.iter_errors(loaded)))
-                exit()
-        return loaded
+    print("Файл успешно загружен")
+    validate(loaded)
+    return loaded
+
+
+def validate(file):
+    with open('checking.json') as checking:
+        schema = json.load(checking)
+    validator = jsonschema.Draft7Validator(schema)
+    try:
+        if not validator.validate(file):
+            print("Нет ошибок валидации")
+    except jsonschema.exceptions.ValidationError:
+        print("Ошибка валидации", file=sys.stderr)
+        exit(1)
 
 
 def main():
